@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title>Profile Viz</title>
+</head>
+
+<body ng-app="profileViz" ng-controller="mainController as main">
+
+<ul>
+    <li ng-repeat="(key, value) in peer_list">
+        <ul>
+            <h3>Peer List {{key}}</h3>
+            <li ng-repeat="(jKey, j) in value.thread_list">
+                <h4>{{j.subject}}</h4>
+                <h5 ng-if="j.peer_response_times.length>0">peer response time {{j.peer_response_times}}</h5>
+                <h5 ng-if="j.user_response_times.length>0">user response time {{j.user_response_times}}</h5>
+                <ul>
+                    <li ng-repeat="(key, value) in j" ng-if="value.length>0 && ['organizations', 'skills', 'people', 'locations'].indexOf(key) != -1">
+                        <h5>{{key}}</h5>
+                        <span class="label label-primary" style="margin-right:5px;" ng-repeat="item in value track by $index">{{item}} </span>
+                    </li>
+                    <li ng-repeat="(key, value) in j" ng-if="value.length>0 && ['phrase_peer', 'phrase_user', 'peer_response_times', 'user_response_times'].indexOf(key) != -1">
+                        <h5>{{key}}</h5>
+                        <span class="label label-info" style="margin-right:5px;" ng-repeat="item in value track by $index">{{item}} </span>
+                    </li>
+                </ul>
+
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<script src="bundle.js"></script>
+
+</body>
+</html>
