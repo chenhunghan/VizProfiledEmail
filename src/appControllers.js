@@ -5,7 +5,7 @@ import forceLayoutWebworker from "worker!../src/forceLayoutWebWorker.js"
 export function mainController($scope, $http) {
     $http({
         method: 'GET',
-        url: '/json/user_shelly.json'
+        url: 'json/user_shelly.json'
     }).then(function successCallback(response) {
         // Build a worker from an anonymous function body
         let dataStructureworker = new buildNodesLinksWebworker;
