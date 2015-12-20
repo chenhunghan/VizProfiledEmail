@@ -1,3 +1,14 @@
-body {
-    background: rgba(0,0,0,0.02);
+.link {
+
+}
+
+.node {
+}
+
+.node.fixed {
+    fill: #f00;
+}
+
+.nodetext {
+    font-size: 10px;
 }

@@ -15,10 +15,10 @@ module.exports = {
                 test: /\.html$/,
                 loader: 'file?name=templates/[name]-[hash:6].html'
             },
-            {
-                test: [/fontawesome-webfont\.svg/, /fontawesome-webfont\.eot/, /fontawesome-webfont\.woff/, /fontawesome-webfont\.woff2/, /fontawesome-webfont\.ttf/],
-                loader: 'file?name=fonts/[name].[ext]'
-            },
+            //{
+            //    test: [/fontawesome-webfont\.svg/, /fontawesome-webfont\.eot/, /fontawesome-webfont\.woff/, /fontawesome-webfont\.woff2/, /fontawesome-webfont\.ttf/],
+            //    loader: 'file?name=fonts/[name].[ext]'
+            //},
             {   test: /\.(png|woff|woff2|eot|ttf|svg)$/,
                 loader: 'url-loader?limit=100000'
             },
@@ -38,5 +38,13 @@ module.exports = {
             filename: 'index.html',
             template: './src/html/index.html'
         }),
+        new webpack.optimize.DedupePlugin(),
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            },
+            sourceMap: true,
+            mangle: false
+        })
     ]
 };

@@ -11,7 +11,9 @@
     "angular-messages": "^1.4.7",
     "angular-ui-bootstrap": "^0.14.2",
     "angular-ui-router": "^0.2.15",
+    "async-task": "^0.3.25",
     "bootstrap": "^3.3.5",
+    "browser-filesaver": "^1.1.0",
     "d3": "^3.5.6",
     "lorem-ipsum": "^1.0.3",
     "randomcolor": "^0.4.0",
@@ -24,10 +26,10 @@
     "css-loader": "^0.20.1",
     "file-loader": "^0.8.4",
     "html-loader": "^0.3.0",
+    "worker-loader": "^0.7.0",
     "html-webpack-plugin": "^1.6.2",
     "style-loader": "^0.12.4",
-    "url-loader": "^0.5.6",
-    "webpack": "^1.12.2"
+    "url-loader": "^0.5.6"
   },
   "scripts": {
     "test": "npm test"
