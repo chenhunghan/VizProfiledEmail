@@ -1,3 +1,4 @@
+import d3 from 'd3'
 import filesaver from 'browser-filesaver'
 import buildNodesLinksWebworker from "worker!../src/buildNodesLinksWebWorker.js"
 import forceLayoutWebworker from "worker!../src/forceLayoutWebWorker.js"
@@ -16,17 +17,14 @@ export function mainController($scope, $http) {
 
             var width = 1400,
                 height = 900;
-
             var svg = d3.select("body").append("svg")
                 .attr("xmlns", "http://www.w3.org/2000/svg")
                 .attr("version", '1.2')
                 .attr("width", width)
                 .attr("height", height)
                 .call(d3.behavior.zoom().on("zoom", redraw));
-
             var vis = svg
                 .append('g');
-
             function redraw() {
                 vis.attr("transform",
                     "translate(" + d3.event.translate + ")"
@@ -81,7 +79,6 @@ export function mainController($scope, $http) {
                     });
                 });
 
-
             var node = gnode.append("rect")
                 .attr("class", "node")
                 .attr("width", function(d) { return d.subject.length*5.5+5 })
@@ -123,48 +120,48 @@ export function mainController($scope, $http) {
                 d3.select(this).classed("fixed", d.fixed = true);
             }
 
-            //let Layoutworker = new forceLayoutWebworker;
-            //Layoutworker.postMessage(JSON.stringify(structuredData.data)); // Send data to our worker.
-            //Layoutworker.onmessage = function (LayoutData) {
-            //    var json = new Blob([JSON.stringify(LayoutData.data)], {type: "application/json"})
-            //    filesaver.saveAs(json, "data.json")
-            //    //var width = 1600,
-            //    //    height = 1200;
-            //    //var color = d3.scale.category20();
-            //    //var svg = d3.select("body").append("svg")
-            //    //    .attr("width", width)
-            //    //    .attr("height", height);
-            //    //var link = svg.selectAll(".link")
-            //    //    .data(mes.data.links)
-            //    //    .enter().append("line")
-            //    //    .attr("class", "link")
-            //    //    .style("stroke-width", 1)
-            //    //    .attr("x1", function (d) {
-            //    //        return d.source.x;
-            //    //    })
-            //    //    .attr("y1", function (d) {
-            //    //        return d.source.y;
-            //    //    })
-            //    //    .attr("x2", function (d) {
-            //    //        return d.target.x;
-            //    //    })
-            //    //    .attr("y2", function (d) {
-            //    //        return d.target.y;
-            //    //    });
-            //    //var node = svg.selectAll(".node")
-            //    //    .data(mes.data.nodes)
-            //    //    .enter().append("circle")
-            //    //    .attr("class", "node")
-            //    //    .attr("r", 2)
-            //    //    .style("fill", function (d) {
-            //    //        return color(d.group);
-            //    //    }).attr("cx", function (d) {
-            //    //        return d.x;
-            //    //    })
-            //    //    .attr("cy", function (d) {
-            //    //        return d.y;
-            //    //    });
-            //};
+            let Layoutworker = new forceLayoutWebworker;
+            Layoutworker.postMessage(JSON.stringify(structuredData.data)); // Send data to our worker.
+            Layoutworker.onmessage = function (LayoutData) {
+                //var json = new Blob([JSON.stringify(LayoutData.data)], {type: "application/json"})
+                //filesaver.saveAs(json, "data.json")
+                var width = 1600,
+                    height = 1200;
+                var color = d3.scale.category20();
+                var svg = d3.select("body").append("svg")
+                    .attr("width", width)
+                    .attr("height", height);
+                var link = svg.selectAll(".link")
+                    .data(LayoutData.data.links)
+                    .enter().append("line")
+                    .attr("class", "link")
+                    .style("stroke-width", 1)
+                    .attr("x1", function (d) {
+                        return d.source.x;
+                    })
+                    .attr("y1", function (d) {
+                        return d.source.y;
+                    })
+                    .attr("x2", function (d) {
+                        return d.target.x;
+                    })
+                    .attr("y2", function (d) {
+                        return d.target.y;
+                    });
+                var node = svg.selectAll(".node")
+                    .data(LayoutData.data.nodes)
+                    .enter().append("circle")
+                    .attr("class", "node")
+                    .attr("r", 2)
+                    .style("fill", function (d) {
+                        return color(d.group);
+                    }).attr("cx", function (d) {
+                        return d.x;
+                    })
+                    .attr("cy", function (d) {
+                        return d.y;
+                    });
+            };
         }
     })
 }

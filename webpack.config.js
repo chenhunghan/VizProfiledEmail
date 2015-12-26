@@ -3,7 +3,8 @@ var HtmlWebpackPlugin = require('html-webpack-plugin'),
 
 module.exports = {
     entry: [
-        "./src/app.js",
+        //"babel-polyfill",
+        "./src/bootstrap.js",
     ],
     output: {
         path: __dirname,
@@ -29,22 +30,42 @@ module.exports = {
             {
                 test: /\.js?$/,
                 exclude: /(node_modules|bower_components)/,
-                loader: 'babel?optional[]=runtime&stage=0'
-            }
-        ]
+                loader: 'babel-loader',
+                query: {
+                    "plugins": [
+                        "angular2-annotations",
+                        "transform-decorators-legacy",
+                        "transform-class-properties",
+                        "transform-flow-strip-types"
+                    ],
+                    presets: ['es2015'],
+                }
+            },
+
+        ],
+        //noParse: [/.+zone\.js\/dist\/.+/, /.+angular2\/bundles\/.+/, /.+zone\.js\/lib\/.+/]
+
     },
+    resolve: {
+        modulesDirectories: [
+            'node_modules'
+        ],
+        extensions: ['', '.js']
+    },
+    devtool: 'source-map', // for faster builds use 'eval'
+    debug: true, // remove in production
     plugins: [
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: './src/html/index.html'
-        }),
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false
-            },
-            sourceMap: true,
-            mangle: false
         })
+        //new webpack.optimize.DedupePlugin(),
+        //new webpack.optimize.UglifyJsPlugin({
+        //    compress: {
+        //        warnings: false
+        //    },
+        //    sourceMap: true,
+        //    mangle: false
+        //})
     ]
 };

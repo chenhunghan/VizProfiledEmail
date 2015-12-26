@@ -1,11 +1,11 @@
 onmessage = function(message) {
-    function buildNodesLinksData(response) {
+    function buildNodesLinksData(message) {
         let threads = []
         let par = 'phrase_user'
-        let peerList =  response.data.peer_list.entries()
-        for (let [peerIndex, peer] of peerList) {
-            let threadList = peer.thread_list.entries()
-            for (let [threadIndex, thread] of threadList) {
+        let peerList =  [ ...new Set(message.data.peer_list)]
+        for (let peer of peerList) {
+            let threadList = peer.thread_list
+            for (let thread of threadList) {
                 let cleanThread = {}
                 cleanThread[par] = thread[par]
                 cleanThread.subject = thread.subject
@@ -15,40 +15,44 @@ onmessage = function(message) {
             }
         }
         let noDuplicatedThreads = [ ...new Set(threads)]
-        for (let [index, threadItem] of noDuplicatedThreads.entries()) {
-            threadItem.index = index
-        }
-        threads = noDuplicatedThreads.slice(0,160)
-        //threads = threads.slice(0,500)
+        threads = noDuplicatedThreads.slice(0,message.options.quantity)
+        threads.forEach((thread, index) => {
+            thread.index = index
+        })
+        let length = threads.length
         let links = []
+
         for (let sourceThread of threads) {
             let sourceParArray = [ ...new Set(sourceThread[par])]
+            postMessage({
+                percentage: Math.round((sourceThread.index)/length * 100)
+            })
             for (let targetThread of threads) {
-                if (sourceThread.index !== targetThread.index && sourceParArray.length > 0 && targetThread[par].length > 0) {
-                    let targetParArray = [ ...new Set(targetThread[par])]
-                    let duplicatedLink = links.find(x => x.source === targetThread.index && x.target === sourceThread.index)
-                    //
-                    if (typeof duplicatedLink === 'undefined') {
-                        let matchedArrayLength = sourceParArray.filter(function(el) {
-                            return targetParArray.indexOf(el) >= 0;
-                        }).length;
-                        if (matchedArrayLength > 0) {
-                            let linkData = {
-                                source: sourceThread.index,
-                                target: targetThread.index,
-                                similarity:  matchedArrayLength/sourceParArray.length
+                let targetParArray = [ ...new Set(targetThread[par])]
+                if (sourceThread.index !== targetThread.index) {
+                    if (sourceParArray.length > 0 && targetParArray.length > 0) {
+                        let duplicatedLink = links.find(x => x.source === targetThread.index && x.target === sourceThread.index)
+                        if (typeof duplicatedLink === 'undefined') {
+                            let matchedArrayLength = sourceParArray.filter(function(el) {
+                                return targetParArray.indexOf(el) >= 0;
+                            }).length;
+                            if (matchedArrayLength > 0) {
+                                links.push({
+                                    source: sourceThread.index,
+                                    target: targetThread.index,
+                                    similarity:  matchedArrayLength/sourceParArray.length
+                                })
                             }
-                            links.push(linkData)
                         }
                     }
                 }
             }
         }
-        return {
+        postMessage({
             links: links,
-            nodes: threads
-        }
+            nodes: threads,
+            percentage: 100
+        })
     }
-    let data = buildNodesLinksData(JSON.parse(message.data))
-    postMessage(data)
+    buildNodesLinksData(JSON.parse(message.data))
 }
