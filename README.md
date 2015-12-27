@@ -10,4 +10,16 @@ a visualisation approach of data mining from emails
 6. edit the files in `./src` to see if the web page changed.
 
 ### Release
-`webpack` to pack all the files into `bundle.js` 
+`webpack` to pack all the files into `bundle.js` at the root
+
+### TODOs
+
+* topological sort by <https://mgechev.github.io/javascript-algorithms/module-graphs_others_topological-sort.html?
+* clustering by [unsupervised machine learning]<http://www.sthda.com/english/wiki/hierarchical-clustering-essentials-unsupervised-machine-learning>
+* clustering by DBSCAN
+    * <https://github.com/upphiminn/jDBSCAN>
+    * <https://github.com/LukaszKrawczyk/density-clustering>
+* clustering by K-means or Hierarchical
+    * <https://github.com/harthur/clusterfck>
+* Look at Relevance Scoring (for phrases classification?)
+* Look at Sentiment analysis: <https://www.burakkanber.com/blog/machine-learning-sentiment-analysis/>
