@@ -8,7 +8,7 @@ onmessage = function(message) {
             for (let thread of threadList) {
                 let cleanThread = {}
                 cleanThread[par] = thread[par]
-                cleanThread.subject = thread.subject
+                //cleanThread.subject = thread.subject
                 cleanThread.email_list = thread.email_list
                 cleanThread.phrase_user = thread.phrase_user
                 threads.push(cleanThread)
@@ -26,23 +26,23 @@ onmessage = function(message) {
             let sourceParArray = [ ...new Set(sourceThread[par])]
             postMessage({
                 percentage: Math.round((sourceThread.index)/length * 100)
-            })
+            });
             for (let targetThread of threads) {
                 let targetParArray = [ ...new Set(targetThread[par])]
-                if (sourceThread.index !== targetThread.index) {
-                    if (sourceParArray.length > 0 && targetParArray.length > 0) {
-                        let duplicatedLink = links.find(x => x.source === targetThread.index && x.target === sourceThread.index)
-                        if (typeof duplicatedLink === 'undefined') {
-                            let matchedArrayLength = sourceParArray.filter(function(el) {
-                                return targetParArray.indexOf(el) >= 0;
-                            }).length;
-                            if (matchedArrayLength > 0) {
-                                links.push({
-                                    source: sourceThread.index,
-                                    target: targetThread.index,
-                                    similarity:  matchedArrayLength/sourceParArray.length
-                                })
-                            }
+                if (sourceThread.index !== targetThread.index && sourceParArray.length > 0 && targetParArray.length > 0) {
+                    let duplicatedLink = links.find(x => x.source === targetThread.index && x.target === sourceThread.index)
+                    if (typeof duplicatedLink === 'undefined') {
+                        let matchedArray = sourceParArray.filter(function(el) {
+                            return targetParArray.indexOf(el) >= 0;
+                        });
+                        if (matchedArray.length > 0) {
+                            let similarity = matchedArray.length/sourceParArray.length;
+                            links.push({
+                                source: sourceThread.index,
+                                target: targetThread.index,
+                                similarity:  similarity,
+                                matched: matchedArray
+                            });
                         }
                     }
                 }
@@ -50,7 +50,7 @@ onmessage = function(message) {
         }
         postMessage({
             links: links,
-            nodes: threads,
+            threads: threads,
             percentage: 100
         })
     }

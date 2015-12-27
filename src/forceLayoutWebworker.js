@@ -2,7 +2,7 @@
 import d3 from '!smash!../src/d3_custom.js'
 onmessage = function(message) {
     function forceLayoutEngine (message) {
-        var force = d3.layout.force().nodes(message.data.nodes).links(message.data.links)
+        var force = d3.layout.force().nodes(message.data.threads).links(message.data.links)
             .size([message.options.width, message.options.height])
             .charge(message.options.forceCharge)
             .gravity(message.options.forceGravity)
@@ -14,7 +14,7 @@ onmessage = function(message) {
                 if (percentage < 100) {
 
                     postMessage({
-                        nodes: force.nodes(),
+                        threads: force.nodes(),
                         links: force.links(),
                         percentage: percentage
                     })
@@ -28,7 +28,7 @@ onmessage = function(message) {
                         ys.push(y)
                     }
                     postMessage({
-                        nodes: force.nodes(),
+                        threads: force.nodes(),
                         links: force.links(),
                         percentage: percentage,
                         maxX: Math.max(...xs),

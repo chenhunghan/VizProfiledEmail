@@ -23,7 +23,7 @@ export class DataService {
     layoutStructurePercentage = 0
     //event
     options = {
-        quantity: 10,
+        quantity: 160,
         width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
         height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
         forceCharge: -1000,
