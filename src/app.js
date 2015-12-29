@@ -133,17 +133,19 @@ export class App{
         let data = await this.dataService.getData()
         this.threads = data.threads
         this.links = data.links
-        console.log(this.data)
-        var that = this
-        if (this.dataService.layoutStructurePercentage === 100) {
-            let resetYScale = that.data.layoutData.maxY-that.data.layoutData.minY,
-                resetXScale = that.data.layoutData.maxX-that.data.layoutData.minX;
-            that.resetScalar = that.dataService.options.height/resetYScale
-            let resetTranslateX = resetXScale*that.resetScalar*0.5,
-                resetTranslateY = resetYScale*that.resetScalar*0.35;
-            that.resetScalePar = `translate(${resetTranslateX},${resetTranslateY}) scale(${that.resetScalar})`
-            clearInterval(s);
-        }
+
+        let autoScale = setInterval(() => {
+            if (this.dataService.layoutStructurePercentage === 100) {
+                let resetYScale = data.maxY-data.minY,
+                    resetXScale = data.maxX-data.minX;
+                this.resetScalar = this.dataService.options.height/resetYScale
+                let resetTranslateX = resetXScale*this.resetScalar*0.5,
+                    resetTranslateY = resetYScale*this.resetScalar*0.35;
+                this.resetScalePar = `translate(${resetTranslateX},${resetTranslateY}) scale(${this.resetScalar})`
+                clearInterval(autoScale);
+            }
+        }, 200);
+
     }
     getThreadStyle(d) {
         return `fill: #ccc;

@@ -1,14 +1,11 @@
-.link {
-
+.particleSystem {
+    position:absolute;
+    top:0;
+    left: 0;
 }
 
-.node {
-}
-
-.node.fixed {
-    fill: #f00;
-}
-
-.nodetext {
-    font-size: 10px;
+.svg {
+    position:absolute;
+    top:0;
+    left: 0;
 }

@@ -11,19 +11,22 @@ export class JsonDataService {
         this.http = http
     }
     getJSON() {
-        var that = this
-        return new Promise( function (resolve, reject) {
-            that.http.get('json/user_shelly.json').subscribe((data) => {
-                resolve(data.json());
+       return new Promise((resolve, reject) => {
+            this.http.get('json/user_shelly.json')
+                .map(res => res.json())
+                .subscribe(
+                    data => resolve(data),
+                    err => this.logError(err),
+                    () => console.log("got JSON data")
+                );
             })
-        });
-    }
+        }
 }
 
 @Injectable()
 export class DataService {
     options = {
-        quantity: 100,
+        quantity: 200,
         width: Math.min(document.documentElement.clientWidth, window.innerWidth || 0),
         height: Math.min(document.documentElement.clientHeight, window.innerHeight || 0),
         forceCharge: -1000,
@@ -50,32 +53,31 @@ export class DataService {
         return forceLayout
     }
     getNodesLinks(data) {
-        var that = this
         return new Promise( (resolve, reject) => {
             let inputData = {
                 data: data,
-                options: that.options
+                options: this.options
             }
-            that.NodesLinksWebWorker.postMessage(JSON.stringify(inputData));
-            that.NodesLinksWebWorker.onmessage = (structuredMessage) => {
-                that.restructurePercentage = structuredMessage.data.percentage
-                if (that.restructurePercentage === 100) {
+            this.NodesLinksWebWorker.postMessage(JSON.stringify(inputData));
+            this.NodesLinksWebWorker.onmessage = (structuredMessage) => {
+                this.restructurePercentage = structuredMessage.data.percentage
+                if (this.restructurePercentage === 100) {
                     resolve(structuredMessage);
+                    console.log(structuredMessage.data)
                 }
             }
         });
     }
     getForceLayout(structuredMessage) {
-        var that = this
         return new Promise( (resolve, reject) => {
             let inputData = {
                 data: structuredMessage.data,
-                options: that.options
+                options: this.options
             }
-            that.forceLayoutWebWorker.postMessage(JSON.stringify(inputData));
-            that.forceLayoutWebWorker.onmessage = (forceLayoutMessage) => {
-                that.layoutStructurePercentage = forceLayoutMessage.data.percentage
-                if (that.options.animation) {
+            this.forceLayoutWebWorker.postMessage(JSON.stringify(inputData));
+            this.forceLayoutWebWorker.onmessage = (forceLayoutMessage) => {
+                this.layoutStructurePercentage = forceLayoutMessage.data.percentage
+                if (this.options.animation) {
                     resolve(forceLayoutMessage.data)
                 } else if (forceLayoutMessage.data.percentage === 100){
                     resolve(forceLayoutMessage.data)
