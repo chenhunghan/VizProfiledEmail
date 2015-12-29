@@ -33,12 +33,13 @@ module.exports = {
                 loader: 'babel-loader',
                 query: {
                     "plugins": [
-                        "angular2-annotations",
-                        "transform-decorators-legacy",
-                        "transform-class-properties",
-                        "transform-flow-strip-types"
+                        "angular2-annotations", //for angular2 decoration
+                        "transform-decorators-legacy", //for angular2 decoration
+                        "transform-class-properties", //for angular2 decoration
+                        "transform-flow-strip-types", //for angular2 decoration
+                        "transform-runtime" //for es7 asyc await see http://stackoverflow.com/questions/28708975/transpile-es7-async-await-with-babel-js
                     ],
-                    presets: ['es2015'],
+                    presets: ['es2015', 'stage-3'], //'stage-3 is for es7 asyc await
                 }
             },
 

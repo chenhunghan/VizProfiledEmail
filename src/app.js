@@ -28,6 +28,7 @@ import { JsonDataService } from '../src/appServices.js';
 //import { Scalable } from '../src/appComponents.js'
 //import { nodes } from '../src/appComponents.js'
 //import { links } from '../src/appComponents.js'
+import { ParticleSystem } from '../src/appComponents.js'
 
 import { Component, View, Inject} from 'angular2/core';
 import { NgClass } from 'angular2/common'
@@ -46,7 +47,7 @@ import { EventEmitter } from 'angular2/core';
     ],
 })
 @View({
-    directives: [NgClass],
+    directives: [NgClass, ParticleSystem],
     styles: [`
         .svgWrapper {
             padding:0;
@@ -60,6 +61,7 @@ import { EventEmitter } from 'angular2/core';
         }
     `],
     template: `
+            <!--<div class="particleSystem"></div>-->
             <div
                 [ngClass]="'svgWrapper'"
                 >
@@ -72,9 +74,10 @@ import { EventEmitter } from 'angular2/core';
                     >
                     <text x=10 y=20>similarity algorithm {{dataService.restructurePercentage}} %</text>
                     <text x=10 y=40>layout algorithm {{dataService.layoutStructurePercentage}} %</text>
+
                     <g [attr.transform]="zoomScalePar">
                         <g [attr.transform]="resetScalePar">
-                            <g *ngFor="#thread of dataService.layoutData.threads"
+                            <g *ngFor="#thread of threads"
                                [attr.transform]="getThreadTransform(thread)"
                                >
                               <rect
@@ -90,7 +93,7 @@ import { EventEmitter } from 'angular2/core';
                                 >{{thread.subject}}
                               </text>
                             </g>
-                            <line *ngFor="#link of dataService.layoutData.links"
+                            <line *ngFor="#link of links"
                                [ngClass]="'link'"
                                [attr.style]="getLinkStyle(link)"
                                [attr.x1]="link.source.x"
@@ -110,27 +113,37 @@ export class App{
         dataService:DataService
     ){
         this.dataService = dataService
-        var that = this
+        this.getData()
+
+
         //window.zone.run(function () {
         //
         //})
-        let s = setInterval(function(){
-            if (dataService.layoutStructurePercentage === 100) {
-                let resetYScale = that.dataService.layoutData.maxY-that.dataService.layoutData.minY,
-                    resetXScale = that.dataService.layoutData.maxX-that.dataService.layoutData.minX;
-                that.resetScalar = that.dataService.options.height/resetYScale
-                let resetTranslateX = resetXScale*that.resetScalar*0.5,
-                    resetTranslateY = resetYScale*that.resetScalar*0.35;
-                that.resetScalePar = `translate(${resetTranslateX},${resetTranslateY}) scale(${that.resetScalar})`
-                clearInterval(s);
-            }
-        }, 200);
+        //let s = setInterval(function(){
+        //
+        //}, 200);
     }
     ngAfterViewInit() {
         let zoomListener = d3.behavior.zoom().on("zoom", () => {
             this.zoomScalePar = `translate(${d3.event.translate}) scale(${d3.event.scale})`
         });
         zoomListener(d3.select('.svg'));
+    }
+    async getData() {
+        let data = await this.dataService.getData()
+        this.threads = data.threads
+        this.links = data.links
+        console.log(this.data)
+        var that = this
+        if (this.dataService.layoutStructurePercentage === 100) {
+            let resetYScale = that.data.layoutData.maxY-that.data.layoutData.minY,
+                resetXScale = that.data.layoutData.maxX-that.data.layoutData.minX;
+            that.resetScalar = that.dataService.options.height/resetYScale
+            let resetTranslateX = resetXScale*that.resetScalar*0.5,
+                resetTranslateY = resetYScale*that.resetScalar*0.35;
+            that.resetScalePar = `translate(${resetTranslateX},${resetTranslateY}) scale(${that.resetScalar})`
+            clearInterval(s);
+        }
     }
     getThreadStyle(d) {
         return `fill: #ccc;

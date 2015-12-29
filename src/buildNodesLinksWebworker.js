@@ -8,7 +8,7 @@ onmessage = function(message) {
             for (let thread of threadList) {
                 let cleanThread = {}
                 cleanThread[par] = thread[par]
-                //cleanThread.subject = thread.subject
+                cleanThread.subject = thread.subject
                 cleanThread.email_list = thread.email_list
                 cleanThread.phrase_user = thread.phrase_user
                 threads.push(cleanThread)

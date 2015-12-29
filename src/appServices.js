@@ -7,25 +7,25 @@ import forceLayoutWebWorker from "worker!../src/forceLayoutWebWorker.js";
 
 @Injectable()
 export class JsonDataService {
-    http;
     constructor(http:Http) {
         this.http = http
     }
-    getData() {
-        return this.http.get('json/user_shelly.json')
+    getJSON() {
+        var that = this
+        return new Promise( function (resolve, reject) {
+            that.http.get('json/user_shelly.json').subscribe((data) => {
+                resolve(data.json());
+            })
+        });
     }
 }
 
 @Injectable()
 export class DataService {
-    layoutData = []
-    restructurePercentage = 0
-    layoutStructurePercentage = 0
-    //event
     options = {
-        quantity: 160,
-        width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
-        height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0),
+        quantity: 100,
+        width: Math.min(document.documentElement.clientWidth, window.innerWidth || 0),
+        height: Math.min(document.documentElement.clientHeight, window.innerHeight || 0),
         forceCharge: -1000,
         forceGravity: 0.08,
         linkDistance: this.width/30,
@@ -37,43 +37,51 @@ export class DataService {
         jsonDataService:JsonDataService
     ) {
        //this.event = new EventEmitter();
-       this.jsonDataService = jsonDataService
+       this.jsonDataService = jsonDataService;
        this.NodesLinksWebWorker = new buildNodesLinksWebWorker;
        this.forceLayoutWebWorker = new forceLayoutWebWorker;
-        this.jsonDataService.getData().subscribe((data) => {
+       this.restructurePercentage = 0;
+       this.layoutStructurePercentage = 0;
+    }
+    async getData() {
+        let data = await this.jsonDataService.getJSON();
+        let structuredMessage = await this.getNodesLinks(data);
+        let forceLayout = await this.getForceLayout(structuredMessage)
+        return forceLayout
+    }
+    getNodesLinks(data) {
+        var that = this
+        return new Promise( (resolve, reject) => {
             let inputData = {
-                data: data.json(),
-                options: this.options
+                data: data,
+                options: that.options
             }
-            this.NodesLinksWebWorker.postMessage(JSON.stringify(inputData));
-            this.NodesLinksWebWorker.onmessage = (structuredMessage) => {
-                this.restructurePercentage = structuredMessage.data.percentage
-                //this.event.next({
-                //    restructurePercentage: this.restructurePercentage,
-                //})
-                if (this.restructurePercentage === 100) {
-                    let inputData = {
-                        data: structuredMessage.data,
-                        options: this.options
-                    }
-                    this.forceLayoutWebWorker.postMessage(JSON.stringify(inputData));
-                    this.forceLayoutWebWorker.onmessage = (forceLayoutMessage) => {
-                        this.layoutStructurePercentage = forceLayoutMessage.data.percentage
-                        if (this.options.animation) {
-                            this.layoutData = forceLayoutMessage.data
-                        } else if (forceLayoutMessage.data.percentage === 100){
-                            this.layoutData = forceLayoutMessage.data
-                        }
-
-                        //this.event.next({
-                        //    layoutData: this.layoutData,
-                        //    restructurePercentage: this.restructurePercentage,
-                        //    layoutStructurePercentage:  this.layoutStructurePercentage
-                        //})
-                    }
+            that.NodesLinksWebWorker.postMessage(JSON.stringify(inputData));
+            that.NodesLinksWebWorker.onmessage = (structuredMessage) => {
+                that.restructurePercentage = structuredMessage.data.percentage
+                if (that.restructurePercentage === 100) {
+                    resolve(structuredMessage);
                 }
             }
-        })
+        });
+    }
+    getForceLayout(structuredMessage) {
+        var that = this
+        return new Promise( (resolve, reject) => {
+            let inputData = {
+                data: structuredMessage.data,
+                options: that.options
+            }
+            that.forceLayoutWebWorker.postMessage(JSON.stringify(inputData));
+            that.forceLayoutWebWorker.onmessage = (forceLayoutMessage) => {
+                that.layoutStructurePercentage = forceLayoutMessage.data.percentage
+                if (that.options.animation) {
+                    resolve(forceLayoutMessage.data)
+                } else if (forceLayoutMessage.data.percentage === 100){
+                    resolve(forceLayoutMessage.data)
+                }
+            }
+        });
     }
 }
 
