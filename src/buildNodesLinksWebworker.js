@@ -24,9 +24,17 @@ onmessage = function(message) {
 
         for (let sourceThread of threads) {
             let sourceParArray = [ ...new Set(sourceThread[par])]
-            //postMessage({
-            //    percentage: Math.round((sourceThread.index)/length * 100)
-            //});
+            let percentage = (sourceThread.index)/length * 100
+            if (percentage<99.5) {
+                postMessage({
+                    percentage: Math.round(percentage)
+                });
+            } else {
+                postMessage({
+                    percentage:percentage
+                });
+            }
+
             for (let targetThread of threads) {
                 let targetParArray = [ ...new Set(targetThread[par])]
                 if (sourceThread.index !== targetThread.index && sourceParArray.length > 0 && targetParArray.length > 0) {

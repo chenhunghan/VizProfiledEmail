@@ -72,8 +72,8 @@ import { EventEmitter } from 'angular2/core';
                     xmlns = "http://www.w3.org/2000/svg"
                     version = 1.2
                     >
-                    <text x=10 y=20>similarity algorithm {{dataService.restructurePercentage}} %</text>
-                    <text x=10 y=40>layout algorithm {{dataService.layoutStructurePercentage}} %</text>
+                    <text x=10 y=20>similarity algorithm {{restructurePercentage}} %</text>
+                    <text x=10 y=40>layout algorithm {{layoutStructurePercentage}} %</text>
 
                     <g [attr.transform]="zoomScalePar">
                         <g [attr.transform]="resetScalePar">
@@ -113,15 +113,8 @@ export class App{
         dataService:DataService
     ){
         this.dataService = dataService
+        this.updatePercentageInterval()
         this.getData()
-
-
-        //window.zone.run(function () {
-        //
-        //})
-        //let s = setInterval(function(){
-        //
-        //}, 200);
     }
     ngAfterViewInit() {
         let zoomListener = d3.behavior.zoom().on("zoom", () => {
@@ -130,22 +123,24 @@ export class App{
         zoomListener(d3.select('.svg'));
     }
     async getData() {
-        let data = await this.dataService.getData()
-        this.threads = data.threads
-        this.links = data.links
-
+        this.data = await this.dataService.getData()
+        this.threads = this.data.threads
+        this.links = this.data.links
+    }
+    updatePercentageInterval() {
         let autoScale = setInterval(() => {
+            this.restructurePercentage = this.dataService.restructurePercentage
+            this.layoutStructurePercentage = this.dataService.layoutStructurePercentage
             if (this.dataService.layoutStructurePercentage === 100) {
-                let resetYScale = data.maxY-data.minY,
-                    resetXScale = data.maxX-data.minX;
+                clearInterval(autoScale);
+                let resetYScale = this.data.maxY-this.data.minY,
+                    resetXScale = this.data.maxX-this.data.minX;
                 this.resetScalar = this.dataService.options.height/resetYScale
                 let resetTranslateX = resetXScale*this.resetScalar*0.5,
                     resetTranslateY = resetYScale*this.resetScalar*0.35;
                 this.resetScalePar = `translate(${resetTranslateX},${resetTranslateY}) scale(${this.resetScalar})`
-                clearInterval(autoScale);
             }
         }, 200);
-
     }
     getThreadStyle(d) {
         return `fill: #ccc;

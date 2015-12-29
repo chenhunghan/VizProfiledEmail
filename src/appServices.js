@@ -26,7 +26,7 @@ export class JsonDataService {
 @Injectable()
 export class DataService {
     options = {
-        quantity: 200,
+        quantity: 500,
         width: Math.min(document.documentElement.clientWidth, window.innerWidth || 0),
         height: Math.min(document.documentElement.clientHeight, window.innerHeight || 0),
         forceCharge: -1000,
@@ -63,7 +63,7 @@ export class DataService {
                 this.restructurePercentage = structuredMessage.data.percentage
                 if (this.restructurePercentage === 100) {
                     resolve(structuredMessage);
-                    console.log(structuredMessage.data)
+                    //console.log(structuredMessage.data)
                 }
             }
         });
