@@ -1,5 +1,6 @@
 # VizProfiledEmail
 a visualisation approach of data mining from emails
+<http://chenhunghan.github.io/VizProfiledEmail/>
 
 ### Developments
 1. cd to the root of this project
