@@ -4,7 +4,7 @@ import { DataService } from '../src/appServices.js';
 
 //import {THREE} from 'three-jsnext';
 
-import THREE from '../node_modules/three.js/build/three.js';
+import THREE from 'three';
 
 @Component({
     selector: 'div.particleSystem'
